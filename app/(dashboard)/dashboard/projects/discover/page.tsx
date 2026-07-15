@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import DashboardCard from "@/components/dashboard/shared/DashboardCard";
+import DiscoverProjectsContent from "@/components/dashboard/projects/DiscoverProjectsContent";
 
 export const metadata: Metadata = {
   title: "Discover Projects",
@@ -18,11 +18,7 @@ export default function DiscoverProjectsPage() {
         </p>
       </div>
 
-      <DashboardCard className="p-8">
-        <p className="text-sm text-[#6B6B6B]">
-          Discover projects content placeholder.
-        </p>
-      </DashboardCard>
+      <DiscoverProjectsContent />
     </div>
   );
 }
