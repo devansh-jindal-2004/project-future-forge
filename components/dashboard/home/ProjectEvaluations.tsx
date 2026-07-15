@@ -28,7 +28,7 @@ export default function ProjectEvaluations({ evaluations }: { evaluations: Proje
                     title="No evaluations yet"
                     description="Submit your projects to receive professional feedback"
                     actionLabel="My Projects"
-                    actionHref="/dashboard/projects"
+                    actionHref="/dashboard/projects/my-projects"
                     size="sm"
                 />
             ) : (

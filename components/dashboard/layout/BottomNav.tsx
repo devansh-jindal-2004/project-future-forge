@@ -8,7 +8,7 @@ import { LayoutDashboard, BookOpen, FolderKanban, GraduationCap, User } from "lu
 const bottomNavItems = [
     { label: "Home", href: "/dashboard", icon: LayoutDashboard },
     { label: "Courses", href: "/dashboard/courses", icon: BookOpen },
-    { label: "Projects", href: "/dashboard/projects", icon: FolderKanban },
+    { label: "Projects", href: "/dashboard/projects/discover", icon: FolderKanban },
     { label: "Mentor", href: "/mentorship/overview", icon: GraduationCap },
     { label: "Profile", href: "/dashboard/profile", icon: User },
 ];

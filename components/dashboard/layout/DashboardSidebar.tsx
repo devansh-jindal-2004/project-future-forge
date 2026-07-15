@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -43,7 +43,17 @@ const navGroups = [
     {
         id: "projects",
         items: [
-            { label: "Projects", href: "/dashboard/projects", icon: "FolderKanban" },
+            {
+                label: "Projects",
+                href: "/dashboard/projects/discover",
+                icon: "FolderKanban",
+                subItems: [
+                    { label: "Discover Projects", href: "/dashboard/projects/discover" },
+                    { label: "My Projects", href: "/dashboard/projects/my-projects" },
+                    { label: "Create Project", href: "/dashboard/projects/create" },
+                    { label: "Applications", href: "/dashboard/projects/applications" },
+                ],
+            },
             { label: "AI Mentor", href: "/dashboard/ai-mentor", icon: "Bot" },
             { label: "Opportunities", href: "/dashboard/opportunities", icon: "Briefcase" },
             { label: "Community", href: "/dashboard/community", icon: "Globe" },
@@ -95,33 +105,81 @@ function SidebarLogo({ isCollapsed }: { isCollapsed: boolean }) {
 }
 
 /* ─── Nav Item ──────────────────────────────────────────────────────────────── */
-function NavItem({ label, href, icon, isCollapsed }: {
-    label: string; href: string; icon: string; isCollapsed: boolean;
+interface SubItem {
+    label: string;
+    href: string;
+}
+
+function NavItem({ label, href, icon, isCollapsed, subItems }: {
+    label: string; href: string; icon: string; isCollapsed: boolean; subItems?: SubItem[];
 }) {
     const pathname = usePathname();
-    const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+    const isSubActive = subItems?.some((sub) => pathname === sub.href || (sub.href !== "/dashboard" && pathname.startsWith(sub.href)));
+    const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href)) || !!isSubActive;
     const Icon = iconMap[icon] ?? LayoutDashboard;
 
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        if (isActive) {
+            setIsOpen(true);
+        }
+    }, [isActive]);
+
     return (
-        <Link
-            href={href}
-            className={`flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative ${
-                isActive
-                    ? "bg-[rgba(192,138,30,0.18)] text-[#D9A441]"
-                    : "text-white/60 hover:bg-white/8 hover:text-white"
-            } ${isCollapsed ? "justify-center px-0 mx-2" : "px-4 mx-0"}`}
-        >
-            <Icon size={18} className={`shrink-0 ${isActive ? "text-[#D9A441]" : "text-white/50 group-hover:text-white"}`} />
-            {!isCollapsed && <span className="truncate">{label}</span>}
-            {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[#D9A441] rounded-r-full" />}
-            
-            {/* Custom Hover Tooltip for collapsed state */}
-            {isCollapsed && (
-                <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-[#101B33] text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 border border-white/10 shadow-lg pointer-events-none">
-                    {label}
+        <div className="flex flex-col w-full">
+            <Link
+                href={href}
+                onClick={() => {
+                    if (subItems && !isCollapsed) {
+                        setIsOpen(!isOpen);
+                    }
+                }}
+                className={`flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative ${
+                    isActive
+                        ? "bg-[rgba(192,138,30,0.18)] text-[#D9A441]"
+                        : "text-white/60 hover:bg-white/8 hover:text-white"
+                } ${isCollapsed ? "justify-center px-0 mx-2" : "px-4 mx-0"}`}
+            >
+                <Icon size={18} className={`shrink-0 ${isActive ? "text-[#D9A441]" : "text-white/50 group-hover:text-white"}`} />
+                {!isCollapsed && <span className="truncate">{label}</span>}
+                {!isCollapsed && subItems && (
+                    <span className="ml-auto text-white/40 group-hover:text-white transition-colors">
+                        {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    </span>
+                )}
+                {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[#D9A441] rounded-r-full" />}
+                
+                {/* Custom Hover Tooltip for collapsed state */}
+                {isCollapsed && (
+                    <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-[#101B33] text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 border border-white/10 shadow-lg pointer-events-none">
+                        {label}
+                    </div>
+                )}
+            </Link>
+
+            {/* Sub-items list */}
+            {!isCollapsed && subItems && isOpen && (
+                <div className="mt-1 ml-6 pl-3 border-l border-white/10 space-y-1">
+                    {subItems.map((subItem) => {
+                        const isSubLinkActive = pathname === subItem.href || (subItem.href !== "/dashboard" && pathname.startsWith(subItem.href));
+                        return (
+                            <Link
+                                key={subItem.href}
+                                href={subItem.href}
+                                className={`block py-1.5 text-xs font-medium transition-all ${
+                                    isSubLinkActive
+                                        ? "text-[#D9A441] font-semibold"
+                                        : "text-white/50 hover:text-white"
+                                }`}
+                            >
+                                {subItem.label}
+                            </Link>
+                        );
+                    })}
                 </div>
             )}
-        </Link>
+        </div>
     );
 }
 
